@@ -1,0 +1,19 @@
+# MacOS
+.DS_Store
+*/.DS_Store
+
+# Python cache
+*.pyc
+*/__pychache__
+
+# Data directory
+/submission
+/output
+REPORT.md
+REPORT.csv
+
+# Visual Studio Code
+.vscode
+
+# IDEA
+.idea
