@@ -48,9 +48,12 @@ class AutoReporter:
             f.writelines(['name,status,\n'])
             f.writelines(['{},{},\n'.format(task_name, int(compiler_output[task_name][0] == 0)) for task_name in compiler_output.keys()])
 
-    def run(self, failed_targets: Dict[str, str], compiler_output: Dict[str, Tuple[int, str]]):
-        self._gen_markdown(failed_targets, compiler_output)
-        self._gen_csv(failed_targets, compiler_output)
+    def run(self, *args, **kwargs):
+        # Generate Markdown report
+        self._gen_markdown(*args, **kwargs)
+
+        # Generate CSV report
+        self._gen_csv(*args, **kwargs)
 
     def __call__(self, failed_targets: Dict[str, str], compiler_output: Dict[str, Tuple[int, str]]):
         self.run(failed_targets, compiler_output)

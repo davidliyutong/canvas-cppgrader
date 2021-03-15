@@ -7,18 +7,26 @@ from tqdm import tqdm
 class AutoBuilder:
     """Build submissions
     """
-    _build_instruction: List[str] = ['/bin/zsh', '-c']
-    _cmake_instructions: List[List[str]] = [
-        ['/bin/zsh', '-c', 'cmake ./'], ['/bin/zsh', '-c', 'make']]
+    shell_executable: str = '/bin/zsh'
 
-    def __init__(self, args):
+    def __init__(self, args, shell_executable: str='/bin/zsh'):
         self.task_dir: str = args.o
         self.original_working_dir: str = os.getcwd()
         self.task_list: List[str] = list()
         self.compiler_output: Dict[str, Tuple[int, str]] = dict()
         # Fullfill the build instruction
-        self._build_instruction.append(args.c)
+        self.compiler_command = args.c
+        self.shell_executable = shell_executable
 
+    @property
+    def _build_instruction(self) -> List[str]:
+        return [self.shell_executable, '-c', self.compiler_command]
+
+    @property
+    def _cmake_instructions(self) ->List[List[str]]:
+        return [
+        [self.shell_executable, '-c', 'cmake ./'], [self.shell_executable, '-c', 'make']]
+    
     def _list_tasks(self):
         """List the output directory for unprocessed tasks
         """
