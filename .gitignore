@@ -11,6 +11,7 @@
 /output
 REPORT.md
 REPORT.csv
+GRADES.csv
 
 # Visual Studio Code
 .vscode
