@@ -6,6 +6,54 @@ from tqdm import tqdm
 from typing import Dict, List
 
 
+def canvas_extract_name(target_name: str) -> str:
+    """ Extract name from target -> 5xxxxxxxxxxxNAME
+
+
+    Args:
+        target_name (str): Example: 5xxxxxxxxxxxNAME_*_*_*_.zip
+
+    Returns:
+        str: Example 5xxxxxxxxxxxNAME
+    """
+    return target_name.split('_')[0]
+
+def canvas_remove_prefix(path_to_file: str) -> str:
+    """Remove canvas prefix of file
+
+    Args:
+        path_to_file (str): 5xxxxxxxxxxxNAME_*_*_filename.cpp 
+
+    Returns:
+        str: filename.zip
+    """
+
+    return ''.join(os.path.basename(path_to_file).split('_')[3:])
+
+def canvas_test_submission_format(path_to_dir: str) -> int:
+    """Check if the submission is of correct format
+
+    Args:
+        path_to_dir (str): path to submission
+
+    Returns:
+        int: 0 -> incorrec, 1 -> correct, 2 -> correct and the submission is included in another folder
+    """
+    content_list: List[str] = [f for f in os.listdir(
+        path_to_dir) if not f.startswith('.')]
+    ret: int = 0
+    # If the zip file contains only one folder, step in
+    if len(content_list) == 1 and os.path.isdir(os.path.join(path_to_dir, content_list[0])):
+        content_list = [f for f in os.listdir(os.path.join(
+            path_to_dir, content_list[0])) if not f.startswith('.')]
+        ret += 1
+
+    if 'CMakeLists.txt' in content_list:
+        return ret + 1
+    else:
+        ret -= 1
+    return ret
+
 class AutoFilter:
     """Filter files
     """
@@ -33,6 +81,10 @@ class AutoFilter:
         # file -> Exception mapping
         self.failed_targets: Dict[str, str] = dict()
         self.keep = args.keep  # Whether to keep output file
+
+        self._extract_name = canvas_extract_name
+        self._remove_prefix = canvas_remove_prefix
+        self._test_submission_format = canvas_test_submission_format
 
     def _create_output_dir(self):
         """Create the output directory, will override the directory
@@ -116,18 +168,6 @@ class AutoFilter:
                 if rarfile.is_rarfile(target_path):
                     self._preprocess_rar(target_path)
 
-    def _extract_name(self, target_name: str) -> str:
-        """ Extract name from target -> 5xxxxxxxxxxxNAME
-
-
-        Args:
-            target_name (str): Example: 5xxxxxxxxxxxNAME_*_*_*_.zip
-
-        Returns:
-            str: Example 5xxxxxxxxxxxNAME
-        """
-        return target_name.split('_')[0]
-
     def _map_submission(self):
         """Map submission to student names(IDs)
         """
@@ -170,18 +210,6 @@ class AutoFilter:
         shutil.rmtree(path_to_dir)
         os.mkdir(path_to_dir)
 
-    def _remove_canvas_prefix(self, path_to_file: str) -> str:
-        """Remove canvas prefix of file
-
-        Args:
-            path_to_file (str): 5xxxxxxxxxxxNAME_*_*_filename.cpp 
-
-        Returns:
-            str: filename.zip
-        """
-
-        return ''.join(os.path.basename(path_to_file).split('_')[3:])
-
     def _filter_process_plain(self, student_name: str, path_to_file: str, remove_prefix: bool = False):
         """Process uncompressed files
 
@@ -198,7 +226,7 @@ class AutoFilter:
         # Match extension
         if remove_prefix:
             # The file is isolated
-            prefix_removed_filename: str = self._remove_canvas_prefix(
+            prefix_removed_filename: str = self._remove_prefix(
                 path_to_file)
             if ext in ['.cpp', '.c']:
                 shutil.copy(path_to_file, os.path.join(
@@ -228,31 +256,6 @@ class AutoFilter:
             else:
                 return False
         return True
-
-    def _test_submission_format(self, path_to_dir: str) -> int:
-        """Check if the submission is of correct format
-
-        Args:
-            path_to_dir (str): path to submission
-
-        Returns:
-            int: 0 -> incorrec, 1 -> correct, 2 -> correct and the submission is included in another folder
-        """
-        content_list: List[str] = [f for f in os.listdir(
-            path_to_dir) if not f.startswith('.')]
-        ret: int = 0
-        # If the zip file contains only one folder, step in
-        if len(content_list) == 1 and os.path.isdir(os.path.join(path_to_dir, content_list[0])):
-            content_list = [f for f in os.listdir(os.path.join(
-                path_to_dir, content_list[0])) if not f.startswith('.')]
-            ret += 1
-
-        if 'CMakeLists.txt' in content_list:
-            return ret + 1
-        else:
-            ret -= 1
-
-        return ret
 
     def _filter_process_dir(self, student_name: str, path_to_dir: str) -> bool:
         """Process a directory

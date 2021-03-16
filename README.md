@@ -4,6 +4,10 @@
 
 - rarfile
 - tqdm
+- reptil
+- typing-extensions
+
+(See requirements.txt)
 
 ## Usage
 
@@ -38,3 +42,5 @@ Output:
 │   └── ...
 └── REPORT.md
 ```
+
+## ManulGrader
