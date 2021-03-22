@@ -8,7 +8,9 @@
 
 # Data directory
 /submission
+/submissions
 /output
+/outputs
 REPORT.md
 REPORT.csv
 GRADES.csv
