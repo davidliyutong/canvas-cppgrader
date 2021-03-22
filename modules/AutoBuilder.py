@@ -109,4 +109,4 @@ class AutoBuilder:
         self._build_executable()
 
     def __call__(self):
-        self.run
+        self.run()
