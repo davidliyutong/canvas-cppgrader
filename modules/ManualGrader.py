@@ -20,6 +20,16 @@ class ManualGrader:
         self.path_to_grade_report: str = path_to_report
         self.dimension: List[str] = dimension
         self.grades: Dict[str, List[float]] = dict()
+        self._restor_grades()
+
+    def _restor_grades(self):
+        """Restore the grades from self.path_to_grade_report
+        """
+        if os.path.exists(self.path_to_grade_report):
+            with open(self.path_to_grade_report, 'r') as f:
+                for line in f.readlines()[1:]: # Discard the first line
+                    line_tokenized = line.split(',')
+                    self.grades[line_tokenized[0]] = [float(score) for score in line_tokenized[1:]]
 
     @property
     def _output_path_exist(self) -> bool:
@@ -141,7 +151,7 @@ class ManualGrader:
             if cmd[0] == 'grade' or cmd[0] == 'g': # Grade, can accept multiple input score
                 if len(cmd) > 1:
                     self._make_grade(task_list[idx], cmd[1:])
-                    idx += 1 # Next submission
+                    if idx < task_list_len - 1: idx += 1 # Next submission
                     replit.clear()# Clear terminal output
                     continue
                 else:
@@ -168,7 +178,10 @@ class ManualGrader:
 
 
     def __call__(self, *args, **kwargs):
-        self.run(*args, **kwargs)
+        try:
+            self.run(*args, **kwargs)
+        except:
+            self.save()
 
 
 if __name__ == '__main__':
