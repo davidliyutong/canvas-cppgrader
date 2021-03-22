@@ -250,7 +250,7 @@ class AutoFilter:
                 shutil.copy(path_to_file, os.path.join(
                     self.output_dir, student_name, 'include'))
 
-            elif ext in ['.txt', '.md', '.pdf', '.word', '.tex', '.exe', '.out', '.bin', '']:
+            elif ext in ['.txt', '.md', '.pdf', 'rtf', '.tex', '.exe', '.out', '.bin', 'doc', 'docx', 'html','']:
                 shutil.copy(path_to_file, os.path.join(
                     self.output_dir, student_name))
             else:
@@ -267,6 +267,9 @@ class AutoFilter:
         Returns:
             bool: If the submission is of correct format(has CMakeLists.txt)
         """
+        if self.keep and os.path.exists(os.path.join(self.output_dir, student_name)):
+            print('[ Info ] Keeping {}'.format(os.path.join(self.output_dir, student_name)))
+            return True
         # Check if the submission is of correct format
         ret: int = self._test_submission_format(path_to_dir)
 
@@ -321,4 +324,4 @@ class AutoFilter:
             print('>', target_name)
 
     def __call__(self):
-        self.run
+        self.run()
