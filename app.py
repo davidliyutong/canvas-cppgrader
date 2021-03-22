@@ -1,5 +1,6 @@
 import argparse
 from modules import *
+from typing import List
 
 __version__ = '1.0'
 
@@ -20,12 +21,22 @@ if __name__ == '__main__':
 
     # Copy files to output_dir
     App1 = AutoFilter(args)
-    App1.run()
+    App1()
     
     # Build submissions
     App2 = AutoBuilder(args)
-    App2.run()
+    App2()
 
     # Generate report
     App3 = AutoReporter(args)
-    App3.run(App1.failed_targets, App2.compiler_output)
+    App3(App1.failed_targets, App2.compiler_output)
+
+    # Grading
+    cmd: str = input('[ Info ] Start grading? [y/N]:')
+    if cmd == 'y' or cmd == 'Y':
+        cmd = input('[ Info ] Save report to? (default: ./GRADES.csv): ')
+        path_to_report: str = cmd if len(cmd) > 0 else './GRADES.csv'
+        cmd = input('[ Info ] Grading dimensions? (default: Answer Interface):')
+        dimension: List[str] = cmd.split(' ') if len(cmd) > 0 else ['Answer', 'Interface']
+        App4 = ManualGrader(args.o, path_to_report, dimension)
+        App4()
