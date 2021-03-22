@@ -1,5 +1,7 @@
 # SpeedGrader
 
+A grader for canvas submissions
+
 ## Dependencies
 
 - rarfile
@@ -43,4 +45,11 @@ Output:
 └── REPORT.md
 ```
 
+## Function
+
+- Filter the submission
+- Build executable
+
 ## ManulGrader
+``` 
+```
