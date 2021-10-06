@@ -30,28 +30,28 @@ def canvas_remove_prefix(path_to_file: str) -> str:
 
     return ''.join(os.path.basename(path_to_file).split('_')[3:])
 
-def canvas_test_submission_format(path_to_dir: str) -> int:
+def canvas_test_submission_format(path_to_dir: str) -> List[int]:
     """Check if the submission is of correct format
 
     Args:
         path_to_dir (str): path to submission
 
     Returns:
-        int: 0 -> incorrec, 1 -> correct, 2 -> correct and the submission is included in another folder
+        List[int]: [0,0] -> incorrec, [1,0] -> correct, [1,1] -> correct and the submission is included in another folder
     """
     content_list: List[str] = [f for f in os.listdir(
-        path_to_dir) if not f.startswith('.')]
-    ret: int = 0
+        path_to_dir) if ((not f.startswith('.')) and (not f.startswith('__MACOSX')))]
+    ret: List[int] = [0,0]
     # If the zip file contains only one folder, step in
     if len(content_list) == 1 and os.path.isdir(os.path.join(path_to_dir, content_list[0])):
         content_list = [f for f in os.listdir(os.path.join(
             path_to_dir, content_list[0])) if not f.startswith('.')]
-        ret += 1
+        ret[0] = 1
 
-    if 'CMakeLists.txt' in content_list:
-        return ret + 1
-    else:
-        ret -= 1
+    if 'CMakeLists.txt' in content_list or 'Makefile' in content_list:
+        ret[1] = 1
+        return ret
+
     return ret
 
 class AutoFilter:
@@ -59,14 +59,14 @@ class AutoFilter:
     """
 
     def __init__(self, args):
-        self.submission_dir: str = args.s  # Submission directory
+        self.submission_dir: str = args.submission_dir  # Submission directory
         # Example:
         # Submission director
         # ├── 5xxxxxxxxxxxNAME_*_*_*.zip
         # ├── ...
         # └── ...
 
-        self.output_dir: str = args.o  # Output directory
+        self.output_dir: str = args.output_dir  # Output directory
         # Example:
         # Output director
         # ├── 5xxxxxxxxxxxNAME
@@ -80,7 +80,8 @@ class AutoFilter:
         self.target_mapping: Dict[str, List[str]] = dict()
         # file -> Exception mapping
         self.failed_targets: Dict[str, str] = dict()
-        self.keep = args.keep  # Whether to keep output file
+        self.keep_output = args.keep_output  # Whether to keep output file
+        self.keep_file_structure = args.keep_file_structure
 
         self._extract_name = canvas_extract_name
         self._remove_prefix = canvas_remove_prefix
@@ -91,7 +92,7 @@ class AutoFilter:
         """
 
         if os.path.exists(self.output_dir):
-            if not self.keep:
+            if not self.keep_output:
                 print("[ Info ] Output folder exists, override")
                 shutil.rmtree(self.output_dir)
                 os.mkdir(self.output_dir)
@@ -267,17 +268,17 @@ class AutoFilter:
         Returns:
             bool: If the submission is of correct format(has CMakeLists.txt)
         """
-        if self.keep and os.path.exists(os.path.join(self.output_dir, student_name)):
+        if self.keep_output and os.path.exists(os.path.join(self.output_dir, student_name)):
             print('[ Info ] Keeping {}'.format(os.path.join(self.output_dir, student_name)))
             return True
         # Check if the submission is of correct format
-        ret: int = self._test_submission_format(path_to_dir)
+        ret: List[int] = self._test_submission_format(path_to_dir)
 
-        if ret > 0:  # Is of correct format,
+        if ret[1] > 0 or self.keep_file_structure > 0:  # Is of correct format, 
             self._clean_dir(os.path.join(self.output_dir, student_name))
-            if ret > 1:  # The entire folder is compressed and of correct format
+            if ret[0] > 0:  # The entire folder is compressed and of correct format
                 path_to_dir = os.path.join(
-                    path_to_dir, [f for f in os.listdir(path_to_dir) if not f.startswith('.')][0])
+                    path_to_dir, [f for f in os.listdir(path_to_dir) if ((not f.startswith('.')) and (not f.startswith('__MACOSX')))][0])
 
             content_list = [f for f in os.listdir(
                 path_to_dir) if not f.startswith('.')]

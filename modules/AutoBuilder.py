@@ -10,12 +10,12 @@ class AutoBuilder:
     shell_executable: str = '/bin/zsh'
 
     def __init__(self, args, shell_executable: str='/bin/zsh'):
-        self.task_dir: str = args.o
+        self.task_dir: str = args.output_dir
         self.original_working_dir: str = os.getcwd()
         self.task_list: List[str] = list()
         self.compiler_output: Dict[str, Tuple[int, str]] = dict()
         # Fullfill the build instruction
-        self.compiler_command = args.c
+        self.compiler_command = args.command
         self.shell_executable = shell_executable
 
     @property
@@ -60,6 +60,32 @@ class AutoBuilder:
         else:
             return False
 
+    def _build_executable_cmake(self, retcode_tmp, output_tmp):
+        ret = subprocess.run(
+                    self._cmake_instructions[0], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        retcode_tmp += ret.returncode
+        output_tmp += str(ret.stderr + ret.stdout, encoding='UTF-8')
+
+        return self._build_executable_make(retcode_tmp, output_tmp)
+       
+    def _build_executable_make(self, retcode_tmp, output_tmp):
+        ret = subprocess.run(
+                    self._cmake_instructions[1], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        retcode_tmp += ret.returncode
+        output_tmp += str(ret.stderr + ret.stdout, encoding='UTF-8')
+        
+        if retcode_tmp != 0:
+            return self._build_executable_cmd(0, output_tmp + '\nMakefile failed, fallback to command')
+        return retcode_tmp, output_tmp
+    
+    def _build_executable_cmd(self, retcode_tmp, output_tmp):
+        ret = subprocess.run(
+                    self._build_instruction, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        retcode_tmp += ret.returncode
+        output_tmp += str(ret.stderr + ret.stdout, encoding='UTF-8')
+        return retcode_tmp, output_tmp
+
+        
     def _build_executable(self):
         """Build executable for all submissions
         """
@@ -75,27 +101,13 @@ class AutoBuilder:
             os.chdir(os.path.join(self.task_dir, task_name))
 
             if self._proble_cmake():  # CMakeLists.txt is found
-                ret = subprocess.run(
-                    self._cmake_instructions[0], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                retcode_tmp += ret.returncode
-                output_tmp += str(ret.stderr + ret.stdout, encoding='UTF-8')
-
-                ret = subprocess.run(
-                    self._cmake_instructions[1], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                retcode_tmp += ret.returncode
-                output_tmp += str(ret.stderr + ret.stdout, encoding='UTF-8')
+                retcode_tmp, output_tmp = self._build_executable_cmake(retcode_tmp, output_tmp)
 
             elif self._probe_makefile():  # Makefile is found
-                ret = subprocess.run(
-                    self._cmake_instructions[1], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                retcode_tmp += ret.returncode
-                output_tmp += str(ret.stderr + ret.stdout, encoding='UTF-8')
+                retcode_tmp, output_tmp = self._build_executable_make(retcode_tmp, output_tmp)
 
             else:
-                ret = subprocess.run(
-                    self._build_instruction, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                retcode_tmp += ret.returncode
-                output_tmp += str(ret.stderr + ret.stdout, encoding='UTF-8')
+                retcode_tmp, output_tmp = self._build_executable_cmd(retcode_tmp, output_tmp)
 
             self.compiler_output[task_name] = (retcode_tmp, output_tmp)
 

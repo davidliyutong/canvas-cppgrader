@@ -7,8 +7,8 @@ class AutoReporter:
     """
 
     def __init__(self, args):
-        self.report_md_path = args.r + '.md'
-        self.report_csv_path = args.r + '.csv'
+        self.report_md_path = args.report_path + '.md'
+        self.report_csv_path = args.report_path + '.csv'
 
     def _gen_markdown(self, failed_targets: Dict[str, str], compiler_output: Dict[str, Tuple[int, str]]):
         """Generate markdown file
