@@ -31,7 +31,7 @@ class AutoReporter:
             f.writelines(['\n## Compiler summary\n\n'])
             f.writelines(['|  name  |  status  |\n', '| ------ | ------- |\n'])
             f.writelines(['| **{}** |    {}    |\n'.format(task_name, str(
-                compiler_output[task_name][0] == 0)) for task_name in compiler_output.keys()])
+                compiler_output[task_name][0] == 0)) for task_name in sorted(compiler_output.keys())])
             f.writelines(['\n## Compiler output\n\n'])
             f.writelines(['**{}**: {}\n\n```\n{}\n```\n\n'.format(task_name, str(compiler_output[task_name]
                                                                                  [0] == 0), compiler_output[task_name][1]) for task_name in compiler_output.keys()])
@@ -46,7 +46,7 @@ class AutoReporter:
         print('[ Info ] Generating report(csv) at {}'.format(self.report_csv_path))
         with open(self.report_csv_path, 'w') as f:
             f.writelines(['name,status,\n'])
-            f.writelines(['{},{},\n'.format(task_name, int(compiler_output[task_name][0] == 0)) for task_name in compiler_output.keys()])
+            f.writelines(['{},{},\n'.format(task_name, int(compiler_output[task_name][0] == 0)) for task_name in sorted(compiler_output.keys())])
 
     def run(self, *args, **kwargs):
         # Generate Markdown report

@@ -229,7 +229,7 @@ class AutoFilter:
             # The file is isolated
             prefix_removed_filename: str = self._remove_prefix(
                 path_to_file)
-            if ext in ['.cpp', '.c']:
+            if ext in ['.cpp', '.c', 'cxx']:
                 shutil.copy(path_to_file, os.path.join(
                     self.output_dir, student_name, 'src', prefix_removed_filename))
 
