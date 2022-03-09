@@ -14,6 +14,9 @@
 REPORT.md
 REPORT.csv
 GRADES.csv
+build
+dist
+*.egg-info
 
 # Visual Studio Code
 .vscode

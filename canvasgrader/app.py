@@ -10,19 +10,19 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--submission_dir', help='Path to submision directory', type=str, default='./submissions')
     parser.add_argument('-o', '--output_dir', help='Path to output directory', type=str, default='./output')
-    parser.add_argument('-r', '--report_path', help='Path to report', type=str, default='./REPORT')
+    parser.add_argument('-r', '--report_path', help='Path to report, will generate <REPORT>.csv|md', type=str, default='./REPORT')
     parser.add_argument('-c',
                         '--command',
                         help='Build command',
                         type=str,
                         default='g++ ./src/*.(c|cpp) -I ./include -o main -Wall -g -std=c++14')
-    parser.add_argument('--keep_output', action='store_true', default=False, help='Keep output files')
+    parser.add_argument('--keep_output', action='store_true', default=False, help='Keep output files, do not extract')
     parser.add_argument('--keep_file_structure', action='store_true', default=False, help='Keep structure of source files')
     parser.add_argument('-a',
                         '--apps',
                         type=str,
                         default='filter,builder,reporter,grader',
-                        help='Apps to start, defualt to all')
+                        help='Apps to start, defualt to all(filter,builder,reporter,grader)')
     args = parser.parse_args()
 
     apps: List[str] = args.apps.split(',')
