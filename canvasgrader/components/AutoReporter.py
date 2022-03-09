@@ -34,7 +34,7 @@ class AutoReporter:
                 compiler_output[task_name][0] == 0)) for task_name in sorted(compiler_output.keys())])
             f.writelines(['\n## Compiler output\n\n'])
             f.writelines(['**{}**: {}\n\n```\n{}\n```\n\n'.format(task_name, str(compiler_output[task_name]
-                                                                                 [0] == 0), compiler_output[task_name][1]) for task_name in compiler_output.keys()])
+                                                                                 [0] == 0), compiler_output[task_name][1]) for task_name in sorted(compiler_output.keys())])
 
     def _gen_csv(self, failed_targets: Dict[str, str], compiler_output: Dict[str, Tuple[int, str]]):
         """Generate CSV report
