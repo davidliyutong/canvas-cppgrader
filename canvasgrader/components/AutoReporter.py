@@ -1,14 +1,20 @@
 import datetime
 from typing import Dict, Tuple
+import uuid
+import os
+import logging
+import coloredlogs
 
-
+logger = logging.getLogger(__name__)
+coloredlogs.install(level='DEBUG')
 class AutoReporter:
     """Creating a report
     """
 
     def __init__(self, args):
-        self.report_md_path = args.report_path + '.md'
-        self.report_csv_path = args.report_path + '.csv'
+        self.unique_id = str(uuid.uuid1()).split('-')[0]
+        self.report_md_path = os.path.join(os.getcwd(), args.report_name + '-' + self.unique_id + '.md')
+        self.report_csv_path = os.path.join(os.getcwd(), args.report_name + '-' + self.unique_id + '.csv')
 
     def _gen_markdown(self, failed_targets: Dict[str, str], compiler_output: Dict[str, Tuple[int, str]]):
         """Generate markdown file
@@ -18,7 +24,7 @@ class AutoReporter:
             compiler_output (Dict[str, Tuple[int, str]]): Compiler output
 
         """
-        print('[ Info ] Generating report at {}'.format(self.report_md_path))
+        logging.info("[ Info ] Generating report at {}".format(self.report_md_path))
         with open(self.report_md_path, 'w') as f:
             f.writelines(['# Grader report\n\n',
                           'Time: {}\n'.format(
@@ -43,7 +49,7 @@ class AutoReporter:
             failed_targets (Dict[str, str]): Failed targets
             compiler_output (Dict[str, Tuple[int, str]]): Compiler output
         """
-        print('[ Info ] Generating report(csv) at {}'.format(self.report_csv_path))
+        logging.info("[ Info ] Generating report(csv) at {}".format(self.report_csv_path))
         with open(self.report_csv_path, 'w') as f:
             f.writelines(['name,status,\n'])
             f.writelines(['{},{},\n'.format(task_name, int(compiler_output[task_name][0] == 0)) for task_name in sorted(compiler_output.keys())])

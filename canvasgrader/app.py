@@ -10,7 +10,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--submission_dir', help='Path to submision directory', type=str, default='./submissions')
     parser.add_argument('-o', '--output_dir', help='Path to output directory', type=str, default='./output')
-    parser.add_argument('-r', '--report_path', help='Path to report, will generate <REPORT>.csv|md', type=str, default='./REPORT')
+    parser.add_argument('--report_name', help='Path to report, will generate <REPORT>.csv|md', type=str, default='REPORT')
     parser.add_argument('-c',
                         '--command',
                         help='Build command',

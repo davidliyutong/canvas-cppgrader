@@ -4,7 +4,11 @@ import zipfile
 import rarfile
 from tqdm import tqdm
 from typing import Dict, List
+import logging
+import coloredlogs
 
+logger = logging.getLogger(__name__)
+coloredlogs.install(level='DEBUG')
 
 def canvas_extract_name(target_name: str) -> str:
     """ Extract name from target -> 5xxxxxxxxxxxNAME
@@ -93,11 +97,11 @@ class AutoFilter:
 
         if os.path.exists(self.output_dir):
             if not self.keep_output:
-                print("[ Info ] Output folder exists, override")
+                logging.info("Output folder exists, override")
                 shutil.rmtree(self.output_dir)
                 os.mkdir(self.output_dir)
             else:
-                print("[ Info ] Output folder exists, keep")
+                logging.info("keep_output==True, keep")
                 pass
         else:
             os.mkdir(self.output_dir)
@@ -121,10 +125,9 @@ class AutoFilter:
             if not os.path.exists(os.path.join(self.submission_dir, dir_related)):
                 f.extractall(os.path.join(self.submission_dir, dir_related))
             else:
-                print('[ Warning ] {} is uncompressed manually'.format(
-                    path_to_zipfile))
+                logging.warning("{path_to_zipfile} is uncompressed manually")
         except Exception as err:
-            print('[ Warning ] {} could not be processed'.format(path_to_zipfile))
+            logging.warning("{path_to_zipfile} could not be processed")
             shutil.rmtree(os.path.join(self.submission_dir, dir_related))
             self.failed_targets[path_to_zipfile] = err
 
@@ -148,7 +151,7 @@ class AutoFilter:
         try:
             f.extractall(os.path.join(self.submission_dir, dir_related))
         except Exception as err:
-            print('[ Warning ] {} could not be processed'.format(path_to_rarfile))
+            logging.warning("{path_to_rarfile} could not be processed".format())
             shutil.rmtree(os.path.join(self.submission_dir, dir_related))
             self.failed_targets[path_to_rarfile] = err
 
@@ -269,7 +272,7 @@ class AutoFilter:
             bool: If the submission is of correct format(has CMakeLists.txt)
         """
         if self.keep_output and os.path.exists(os.path.join(self.output_dir, student_name)):
-            print('[ Info ] Keeping {}'.format(os.path.join(self.output_dir, student_name)))
+            logging.info('Keeping {}'.format(os.path.join(self.output_dir, student_name)))
             return True
         # Check if the submission is of correct format
         ret: List[int] = self._test_submission_format(path_to_dir)
@@ -320,7 +323,7 @@ class AutoFilter:
         self._map_submission()
         self._create_alldir()
         self._filter_all()
-        print('[ Info ] The unprocessed files are:')
+        logging.info("The unprocessed files are:")
         for target_name in self.failed_targets:
             print('>', target_name)
 
