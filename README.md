@@ -1,6 +1,6 @@
 # canvas-cppgrader
 
-A grader for cpp submissions. It is designed to quickly build and run students' submission fron Canvas CMS system.
+A grader for cpp submissions. It is designed to quickly build and run students' submission fron Canvas LMS system.
 
 ## Dependencies
 
