@@ -1,0 +1,11 @@
+image: python:3.8
+
+run:
+    stage: build
+    script:
+        - python -m pip install --upgrade pip
+        - pip install build
+        - python setup.py bdist_wheel
+    artifacts:
+        paths:
+        - dist/*.whl
