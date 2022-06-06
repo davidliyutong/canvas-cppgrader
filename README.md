@@ -1,6 +1,11 @@
 # canvas-cppgrader
 
-A grader for cpp submissions. It is designed to quickly build and run students' submission fron Canvas LMS system.
+A grader for cpp submissions. It is designed to quickly build and run students' submission from Canvas LMS system.
+
+![Upload Python Package](https://github.com/davidliyutong/canvas-cppgrader/workflows/Upload%20Python%20Package/badge.svg)
+[![Pypi](https://img.shields.io/pypi/v/canvas-cppgrader.svg)](https://pypi.org/project/canvas-cppgrader/)
+
+----
 
 ## Dependencies
 
@@ -11,11 +16,11 @@ The package has following dependencies and can be installed via PIP
 - reptil
 - typing-extensions
 - coloredlogs
-- zsh Shell(or any shell with regex command support)
+- `Zsh` shell(the tool currently only support zsh regex command)
 
 (See requirements.txt)
 
-## Installation
+## Get Started
 
 ```shell
 python setup.py install
