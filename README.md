@@ -1,6 +1,6 @@
-# SpeedGrader
+# canvas-cppgrader
 
-A grader for canvas submissions
+A grader for cpp submissions. It is designed to quickly build and run students' submission fron Canvas CMS system.
 
 ## Dependencies
 
@@ -25,32 +25,32 @@ or
 
 ```shell
 python setup.py bdist_wheel
-pip install dist/canvasgrader-<version>-<arch>.whl
+pip install dist/canvas_cppgrader-<version>-<arch>.whl
 ```
 
 ## Usage
 
-Prepare the submission files. User should extract submission as follows. The name of submission directory is `submission` by default.
+Prepare the submission files. User should extract submission and rename them as follows. The name of submission directory is `submission` by default.
 
 ```shell
 .
 └── submission
-    ├── 5xxxxxxxxxxxNAME*_*_*.zip
+    ├── 5xxxxxxxxxxxNAME_*_*_*.zip
     └── ...
 ```
 
-Where `5xxxxxxxxxxx` is student's ID number. We denote this folder as `$submission_root`
+Where `5xxxxxxxxxxx` is student's ID number, `NAME` the student name followed by three arbitrary text sections seperated by `_`. We denote this folder as `$submission_root`
 
-Run the canvasgrader module with appropriated arguments
+Run the cppgrader module with appropriated arguments
 
 ```shell
-python -m canvasgrader --submission_dir=$submission_root --output_dir=$output_dir --report_name=REPORT
+python -m cppgrader --submission_dir=$submission_root --output_dir=$output_dir --report_name=REPORT
 ```
 
 For example
 
 ```shell
-python -m canvasgrader --submission_dir=./submission --output_dir=./output --report_name=REPORT
+python -m cppgrader --submission_dir=./submission --output_dir=./output --report_name=REPORT
 ```
 
 **Arguments**:
@@ -112,7 +112,7 @@ An antiplag script is added to fight against cheating. The antiplag tool use `di
 To run the app, execute the following command
 
 ```shell
-python -m canvasgrader.tools.antiplag --base_dir=$output_dir
+python -m cppgrader.tools.antiplag --base_dir=$output_dir
 ```
 
 The `$output_dir` can be any directory. All source files and header files under this directory will be cross compared (complexity $\mathcal{O}(N^2)$).
